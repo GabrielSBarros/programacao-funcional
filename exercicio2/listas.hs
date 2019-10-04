@@ -1,33 +1,30 @@
 {-
 - Encontra o ultimo elemento de uma lista. Caso a lista seja vazia retorne o seguinte comando: error "Lista vazia!" 
 -}
-meuLast [] = error "lista vazia"
-meuLast (x:xs)
-    | xs == [] = x
-    | otherwise = meuLast xs
-    
-    
+meuLast [] = error "Lista Vazia!"
+meuLast (x:[]) = x
+meuLast (x:xs) = meuLast xs
 
 {-
 - Encontra o penultimo elemento de uma lista. Caso a lista seja vazia ou tenha apenas um elemento retorne o seguinte comando: error "Lista sem penultimo" 
 -}
-penultimo [] = error "lista sem penultimo"
-penultimo (_: []) = error "lista sem penultimo"
-penultimo (x: (y:[])) = x
-penultimo (x: (y:ys)) = penultimo (y:ys)
+penultimo [] = error "Lista Sem Penultimo!"
+penultimo (x:[]) = error "Lista Sem Penultimo!"
+penultimo (x:y:[]) = x
+penultimo (x:xs) = penultimo xs
 
 {-
 - Retorna o k-esimo (k varia de 1 ate N) elemento de uma lista. Ex: elementAt 2 [4,7,1,9] = 7
 -}
+elementAt i [] = error "out of bounds"
 elementAt 1 (x:xs) = x
 elementAt i (x:xs) = elementAt (i - 1) xs
 
 {-
 - Retorna o tamanho de uma lista. 
 -}
-meuLength xs = meuLength' 0 xs 
-meuLength' i [] = i
-meuLength' i (x:xs) = meuLength' (i + 1) xs
+meuLength [] = 0
+meuLength (x:xs) = 1 + meuLength xs
 
 {-
 - Retorna o inverso de uma lista. 
@@ -38,34 +35,21 @@ meuReverso (x:xs) = meuReverso xs ++ [x]
 {-
 - Diz se uma lista é palindrome. 
 -}
-isPalindrome xs = xs == meuReverso xs
+isPalindrome xs = meuReverso xs == xs
 
 {-
 - Remove os elementos duplicados de uma lista. Ex: compress [2,5,8,2,1,8] = [2,5,8,1]
 - Voce pode usar a funcao elem de Haskell
 -}
-compress xs = compress' xs []
-compress' [] ys = ys
-compress' (x:xs) ys
-    | elem x ys = compress' xs ys
-    | otherwise = compress' xs (ys ++ [x])
+compress [] = []
+compress (x:xs) = [x] ++ (compress (filter (/=x) xs))
 
 {-
 - Varre a lista da esquerda para a direita e junta os elementos iguais. Ex: compact [2,5,8,2,1,8] = [2,2,5,8,8,1]
 - Voce pode usar funcoes sobre listas como : (cons), filter, etc.
 -}
 compact [] = []
-compact (x:xs) 
-  | elem x xs = [x] ++ (compact (x:(remove x xs)))
-  | otherwise = (x:compact xs)
-
-
-removeAll e [] = []
-removeAll e (x:xs)
-  | e == x = removeAll e xs
-  | otherwise = [x] ++ removeAll e xs
-  
-
+compact (x:xs) = [x] ++ [y | y <- xs, y == x] ++ (compact (filter (/=x) xs))
 
 
 {-
@@ -73,8 +57,8 @@ removeAll e (x:xs)
 - Voce pode usar funcoes sobre listas como : (cons), filter, etc.
 -}
 encode [] = []
-encode (x:xs) = [(x, ocurrence)] ++ encode (removeAll x xs)
-  where ocurrence = length(filter (== x) (x:xs))
+encode (x:xs) = [(x, ocurrence)] ++ encode (filter (/=x) xs)
+  where ocurrence = length (filter (==x) xs) + 1
 {-
 - Divide uma lista em duas sublistas onde o ponto de divisao é dado. Ex: split [3,6,1,9,4] 3 = [[3,6,1],[9,4]]
 -}
@@ -99,7 +83,6 @@ insertAt el pos xs = (take (pos - 1) xs) ++ [el] ++ drop (pos - 1) xs
 minList [x] = x
 minList (x:xs) = if (x < (minList xs)) then x else minList xs
 
-remove e [] = []
 remove e (x:xs) | e == x = xs
                 | otherwise = x:(remove e xs)
 sort [] = []
@@ -111,7 +94,7 @@ sort xs = x:ys
 {-
 - Calcula a soma de todos os elementos de uma lista usando foldr.
 -}
-mySum xs = foldr (+) 0 xs
+mySum xs = foldr (+) 0 xs 
 
 {-
 - Dada a funcao max que retorna o maximo entre dois numeros, escreva uma funcao que usa a função
@@ -123,14 +106,15 @@ maxList (x:xs) = foldr (max) x xs
 - Transforma uma string em uma palindrome acrescentando o reverso da string ao seu final sem usar a funcao reverse. 
 - Ex: buildPalindrome [1,2,3] = [1,2,3,3,2,1]. 
 -}
-buildPalindrome xs = xs ++ (reverse xs)
+buildPalindrome [] = []
+buildPalindrome (x:xs) = [x] ++ buildPalindrome xs ++ [x]
 
 {-
 - Computa a media dos elementos de uma lista de numeros, sem usar nenhuma funcao pronta de listas.
 -}
-mean xs = (mySum xs) / (meuLength xs)
+mean xs = mySum xs / meuLength xs
 
 {-
 - Escreva a funcao myAppend que faz o append de uma lista xs com a lista ys, usando a função foldr. 
 -}
-myAppend xs ys = foldr (++) ys [xs]
+myAppend xs ys = foldr (:) ys xs
