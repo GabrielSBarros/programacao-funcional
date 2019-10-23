@@ -25,3 +25,21 @@ instance Eq Time where
 instance Show Time where
     show (Local a b c) = show a ++ ":" ++ show b ++ " " ++ show c
     show (Total a b) = show a ++ ":" ++ show b
+
+instance Ord Time where
+    x < y = (totalMinutos x) < (totalMinutos y)
+    x <= y = (totalMinutos x) <= (totalMinutos y)
+    x >= y = (totalMinutos x) >= (totalMinutos y)
+    x > y = (totalMinutos x) > (totalMinutos y)
+    min x y = if x <= y then x else y
+    max x y = if x >= y then x else y
+
+seleciona time timeList = filter (>= time) timeList
+
+toTotal :: Int -> Time
+toTotal a = (Total (div a 60) (mod a 60))
+
+-- instance Enum Time where    
+--     succ (Total a b) = Total a (b + 1)
+--     toEnum a = (totalMinutos a)
+--     fromEnum a = toTotal a
